@@ -20,6 +20,9 @@ public class TransitService {
     @Autowired
     private RouteService routeService;
 
+    @Autowired
+    private RoadSegmentService roadSegmentService;
+
     // ==================== BUS ROUTE MAPPING ====================
     // Maps corridor segments to real Sri Lankan bus numbers
     private static final Map<String, List<String>> BUS_NUMBERS = new HashMap<>();
@@ -160,31 +163,48 @@ public class TransitService {
             int segDist = 0;
             int segCost = 0;
             int segStops = 0;
+            List<BusStop> segPath = new ArrayList<>(); // track all stops in this bus leg
+            segPath.add(path.get(i));
 
             while (i < path.size() - 1) {
                 List<String> nextBuses = getBusNumbers(path.get(i).getId(), path.get(i + 1).getId());
                 if (!nextBuses.contains(primaryBus)) break; // need to transfer
 
-                // Estimate segment metrics (from edge data or fallback)
                 segTime += estimateTime(path.get(i), path.get(i + 1));
                 segDist += estimateDistance(path.get(i), path.get(i + 1));
                 segCost += estimateCost(path.get(i), path.get(i + 1));
                 segStops++;
                 i++;
+                segPath.add(path.get(i));
             }
 
             allBuses.add(primaryBus);
-            // Also add other bus options for this corridor
-            List<String> allBusesForSeg = getBusNumbers(path.get(segStart).getId(), path.get(segStart + 1).getId());
 
-            segments.add(TransitSegment.bus(
+            TransitSegment busSeg = TransitSegment.bus(
                     primaryBus,
                     path.get(segStart).getName(), path.get(segStart).getId(),
                     path.get(i).getName(), path.get(i).getId(),
                     segTime, segDist, segCost, segStops,
                     path.get(segStart).getLatitude(), path.get(segStart).getLongitude(),
                     path.get(i).getLatitude(), path.get(i).getLongitude()
-            ));
+            );
+
+            // ✅ Attach road-following polyline for this bus segment
+            List<double[]> fullPolyline = new ArrayList<>();
+            for (int p = 0; p < segPath.size() - 1; p++) {
+                List<double[]> roadPts = roadSegmentService.getSegment(segPath.get(p), segPath.get(p + 1));
+                if (fullPolyline.isEmpty()) {
+                    fullPolyline.addAll(roadPts);
+                } else {
+                    // skip first point to avoid duplicates at junctions
+                    for (int r = 1; r < roadPts.size(); r++) {
+                        fullPolyline.add(roadPts.get(r));
+                    }
+                }
+            }
+            busSeg.setPolyline(fullPolyline);
+
+            segments.add(busSeg);
 
             totalTime += segTime;
             totalDistance += segDist;

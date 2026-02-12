@@ -1,5 +1,7 @@
 package com.example.bus_router_planner.model;
 
+import java.util.List;
+
 /**
  * Represents one leg/segment of a transit journey.
  * Type can be: "walk", "bus"
@@ -20,6 +22,7 @@ public class TransitSegment {
     private double toLat;
     private double toLng;
     private int stopCount;         // number of bus stops in this segment
+    private List<double[]> polyline; // road-following coordinates [[lat,lng],...]
 
     public TransitSegment() {}
 
@@ -110,4 +113,7 @@ public class TransitSegment {
 
     public int getStopCount() { return stopCount; }
     public void setStopCount(int stopCount) { this.stopCount = stopCount; }
+
+    public List<double[]> getPolyline() { return polyline; }
+    public void setPolyline(List<double[]> polyline) { this.polyline = polyline; }
 }
