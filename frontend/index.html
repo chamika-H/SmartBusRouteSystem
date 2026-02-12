@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚌 Smart Bus Route Finder</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <title>🚌 Smart Bus Route Finder - Sri Lanka</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
@@ -62,17 +61,11 @@
 
         .seg-strip{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:8px}
         .seg-walk{display:flex;align-items:center;gap:2px;color:#94a3b8;font-size:11px}
-        .seg-walk .wicon{font-size:13px}
         .seg-arrow{color:#475569;font-size:10px}
         .seg-bus{display:flex;align-items:center;gap:3px}
-        .seg-bus .bicon{font-size:12px}
         .bus-badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;color:white;font-family:'Space Mono',monospace}
-        .bus-badge.blue{background:#4285F4}
-        .bus-badge.green{background:#34A853}
-        .bus-badge.orange{background:#EA8600}
-        .bus-badge.red{background:#EA4335}
-        .bus-badge.purple{background:#7B1FA2}
-        .bus-badge.teal{background:#0097A7}
+        .bus-badge.c0{background:#4285F4}.bus-badge.c1{background:#34A853}.bus-badge.c2{background:#EA8600}
+        .bus-badge.c3{background:#EA4335}.bus-badge.c4{background:#7B1FA2}.bus-badge.c5{background:#0097A7}
 
         .tcard-info{display:flex;gap:16px;font-size:11px;color:#64748b}
         .tcard-info span{display:flex;align-items:center;gap:3px}
@@ -81,7 +74,7 @@
         .tcard.active .tcard-detail{display:block}
         .detail-seg{display:flex;gap:12px;padding:6px 0}
         .detail-seg .d-line{width:4px;border-radius:2px;min-height:32px;flex-shrink:0}
-        .detail-seg .d-line.walk{background:#94a3b8;border-style:dashed}
+        .detail-seg .d-line.walk{background:#94a3b8}
         .detail-seg .d-line.bus{background:#4285F4}
         .detail-seg .d-content{flex:1}
         .detail-seg .d-type{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
@@ -96,14 +89,6 @@
 
         .map-wrap{position:relative}
         #map{width:100%;height:100vh}
-        .legend{position:absolute;top:12px;right:12px;z-index:1000;background:rgba(15,23,42,.9);backdrop-filter:blur(10px);border:1px solid #334155;border-radius:10px;padding:12px 16px;font-size:11px}
-        .legend .ltitle{font-weight:700;color:#3b82f6;font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-        .legend .litem{display:flex;align-items:center;gap:6px;margin-bottom:4px;color:#94a3b8}
-        .legend .ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-        .map-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;background:rgba(15,23,42,.95);padding:20px 30px;border-radius:12px;border:1px solid #334155;text-align:center;display:none}
-        .map-loading.show{display:block}
-        .map-loading p{color:#94a3b8;font-size:13px;margin-top:8px}
 
         @media(max-width:900px){
             .app{grid-template-columns:1fr}
@@ -123,7 +108,6 @@
                 <span id="sTxt">Offline</span>
             </div>
         </div>
-
         <div class="search">
             <div class="search-row">
                 <label>From</label>
@@ -139,9 +123,8 @@
                 <input class="sinput" id="dstIn" placeholder="Where to?" autocomplete="off">
                 <div class="aclist" id="dstAC"></div>
             </div>
-            <button class="go-btn" id="goBtn" onclick="findTransit()">🔎 Search Bus Routes</button>
+            <button class="go-btn" onclick="findTransit()">🔎 Search Bus Routes</button>
         </div>
-
         <div class="results" id="results">
             <div class="empty">
                 <div class="eicon">🗺️</div>
@@ -150,44 +133,45 @@
             </div>
         </div>
     </div>
-
     <div class="map-wrap">
         <div id="map"></div>
-        <div class="map-loading" id="mapLoading">
-            <div class="spinner"></div>
-            <p>Loading road route...</p>
-        </div>
-        <div class="legend">
-            <div class="ltitle">Legend</div>
-            <div class="litem"><div class="ldot" style="background:#3b82f6"></div>Bus Stop</div>
-            <div class="litem"><div class="ldot" style="background:#22c55e"></div>Start</div>
-            <div class="litem"><div class="ldot" style="background:#ef4444"></div>End</div>
-            <div class="litem"><div class="ldot" style="background:#f97316"></div>Bus Route (on road)</div>
-            <div class="litem"><div class="ldot" style="background:#94a3b8;border:1px dashed #64748b"></div>Walking</div>
-        </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Google Maps JS API -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAG0W7RJFWmsTR02I91CmFwTi32Y4Gwp9c&libraries=geometry&callback=initMap" async defer></script>
+
 <script>
 const API = 'http://localhost:8080/api';
-const OSRM = 'https://router.project-osrm.org/route/v1/driving';
-
-let map, stops=[], stopMarkers=[], routeLayers=[], selSrc=null, selDst=null, activeCard=-1;
 const COLORS = ['#4285F4','#34A853','#EA8600','#EA4335','#7B1FA2','#0097A7'];
-const COLOR_NAMES = ['blue','green','orange','red','purple','teal'];
 
-// Road geometry cache to avoid repeated API calls
-const roadCache = {};
+let gmap, stops=[], mapMarkers=[], routeRenderers=[], routeOverlays=[];
+let selSrc=null, selDst=null;
+let directionsService;
 
-window.onload = () => { initMap(); checkAPI(); loadStops(); setupAC('srcIn','srcAC','src'); setupAC('dstIn','dstAC','dst'); };
-
+// ==================== GOOGLE MAP INIT ====================
 function initMap(){
-    map = L.map('map').setView([6.9271,79.8612],12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-        attribution:'© OpenStreetMap',
-        maxZoom:19
-    }).addTo(map);
+    gmap = new google.maps.Map(document.getElementById('map'),{
+        center:{lat:6.9271,lng:79.8612},
+        zoom:12,
+        mapTypeControl:true,
+        mapTypeControlOptions:{
+            style:google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position:google.maps.ControlPosition.TOP_LEFT,
+            mapTypeIds:['roadmap','satellite','terrain','hybrid']
+        },
+        streetViewControl:true,
+        fullscreenControl:true,
+        zoomControl:true,
+        styles:[] // default Google Maps look
+    });
+
+    directionsService = new google.maps.DirectionsService();
+
+    checkAPI();
+    loadStops();
+    setupAC('srcIn','srcAC','src');
+    setupAC('dstIn','dstAC','dst');
 }
 
 async function checkAPI(){try{const r=await fetch(API+'/health');setAPI(r.ok)}catch{setAPI(false)}}
@@ -196,22 +180,49 @@ function setAPI(on){
     document.getElementById('sTxt').textContent=on?'Online':'Offline';
     document.getElementById('status').className='status '+(on?'on':'off');
 }
-async function loadStops(){try{const r=await fetch(API+'/stops');stops=await r.json();showAllStops()}catch(e){console.error(e)}}
-
-function mkIcon(color,size){
-    return L.divIcon({html:`<div style="width:${size}px;height:${size}px;background:${color};border:2px solid rgba(255,255,255,.9);border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>`,className:'',iconSize:[size,size],iconAnchor:[size/2,size/2]});
+async function loadStops(){
+    try{
+        const r=await fetch(API+'/stops');
+        stops=await r.json();
+        showAllStops();
+    }catch(e){console.error(e)}
 }
 
+// ==================== SHOW BUS STOPS ON MAP ====================
 function showAllStops(){
-    stopMarkers.forEach(m=>map.removeLayer(m));stopMarkers=[];
-    const bounds=[];
+    mapMarkers.forEach(m=>m.setMap(null));mapMarkers=[];
+    const bounds=new google.maps.LatLngBounds();
+
     stops.forEach(s=>{
-        const ll=[s.latitude,s.longitude];bounds.push(ll);
-        const m=L.marker(ll,{icon:mkIcon('#3b82f6',8)}).addTo(map);
-        m.bindPopup(`<b>${s.name}</b><br><small>${s.id}</small>`);
-        stopMarkers.push(m);
+        const pos={lat:s.latitude,lng:s.longitude};
+        bounds.extend(pos);
+
+        const marker=new google.maps.Marker({
+            position:pos,
+            map:gmap,
+            title:s.name,
+            icon:{
+                path:google.maps.SymbolPath.CIRCLE,
+                scale:6,
+                fillColor:'#4285F4',
+                fillOpacity:0.9,
+                strokeColor:'#fff',
+                strokeWeight:2
+            }
+        });
+
+        const infoWindow=new google.maps.InfoWindow({
+            content:`<div style="font-family:'DM Sans',sans-serif;padding:4px">
+                <b style="font-size:14px">${s.name}</b><br>
+                <span style="color:#666;font-size:12px">ID: ${s.id}</span><br>
+                <span style="color:#999;font-size:11px">${s.latitude.toFixed(4)}, ${s.longitude.toFixed(4)}</span>
+            </div>`
+        });
+        marker.addListener('click',()=>infoWindow.open(gmap,marker));
+        mapMarkers.push(marker);
     });
-    if(bounds.length)map.fitBounds(bounds,{padding:[40,40]});
+
+    gmap.fitBounds(bounds,{top:40,right:40,bottom:40,left:40});
 }
 
 // ==================== AUTOCOMPLETE ====================
@@ -239,60 +250,69 @@ function useMyLocation(){
         let near=null,md=Infinity;
         stops.forEach(s=>{const d=Math.hypot(s.latitude-p.coords.latitude,s.longitude-p.coords.longitude);if(d<md){md=d;near=s}});
         if(near){document.getElementById('srcIn').value=near.name;selSrc=near}
+
+        // Also show user location on map
+        new google.maps.Marker({
+            position:{lat:p.coords.latitude,lng:p.coords.longitude},
+            map:gmap,
+            title:'Your Location',
+            icon:{
+                path:google.maps.SymbolPath.CIRCLE,
+                scale:8,
+                fillColor:'#a855f7',
+                fillOpacity:1,
+                strokeColor:'#fff',
+                strokeWeight:3
+            }
+        });
+        gmap.setCenter({lat:p.coords.latitude,lng:p.coords.longitude});
+        gmap.setZoom(15);
     },()=>alert('Enable GPS'));
 }
+
 function swap(){
     const a=document.getElementById('srcIn'),b=document.getElementById('dstIn');
     const tv=a.value;a.value=b.value;b.value=tv;
     const ts=selSrc;selSrc=selDst;selDst=ts;
 }
 
-// ==================== OSRM ROAD ROUTING ====================
-// Gets real road geometry between two lat/lng points using free OSRM API
-async function getRoadRoute(lat1, lng1, lat2, lng2) {
-    const key = `${lat1},${lng1}-${lat2},${lng2}`;
-    if (roadCache[key]) return roadCache[key];
-
-    try {
-        const url = `${OSRM}/${lng1},${lat1};${lng2},${lat2}?overview=full&geometries=geojson`;
-        const resp = await fetch(url);
-        const data = await resp.json();
-
-        if (data.routes && data.routes.length > 0) {
-            // OSRM returns [lng,lat] — convert to [lat,lng] for Leaflet
-            const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-            roadCache[key] = coords;
-            return coords;
-        }
-    } catch(e) {
-        console.warn('OSRM failed, using straight line', e);
-    }
-
-    // Fallback: straight line
-    return [[lat1, lng1], [lat2, lng2]];
+// ==================== GET ROAD ROUTE VIA GOOGLE DIRECTIONS ====================
+function getGoogleRoute(fromLat,fromLng,toLat,toLng){
+    return new Promise((resolve)=>{
+        directionsService.route({
+            origin:{lat:fromLat,lng:fromLng},
+            destination:{lat:toLat,lng:toLng},
+            travelMode:google.maps.TravelMode.DRIVING
+        },(result,status)=>{
+            if(status==='OK' && result.routes.length>0){
+                // Decode the overview polyline to get path points
+                const path=result.routes[0].overview_path;
+                resolve(path);
+            } else {
+                // Fallback: straight line
+                resolve([
+                    new google.maps.LatLng(fromLat,fromLng),
+                    new google.maps.LatLng(toLat,toLng)
+                ]);
+            }
+        });
+    });
 }
 
-// Get road route for a bus segment that may pass through multiple stops
-async function getFullBusRoute(segment) {
-    // If backend provided polyline with intermediate points, route through each pair
-    if (segment.polyline && segment.polyline.length > 1) {
-        const allCoords = [];
-        for (let i = 0; i < segment.polyline.length - 1; i++) {
-            const p1 = segment.polyline[i];
-            const p2 = segment.polyline[i + 1];
-            const roadCoords = await getRoadRoute(p1[0], p1[1], p2[0], p2[1]);
-            if (allCoords.length === 0) {
-                allCoords.push(...roadCoords);
-            } else {
-                // skip first to avoid duplicate junction points
-                allCoords.push(...roadCoords.slice(1));
-            }
+// Get full road route for a bus segment (may have polyline with intermediate stops)
+async function getFullBusRoad(seg){
+    if(seg.polyline && seg.polyline.length > 1){
+        // Route through each intermediate pair
+        const allPts=[];
+        for(let i=0;i<seg.polyline.length-1;i++){
+            const p1=seg.polyline[i], p2=seg.polyline[i+1];
+            const pts=await getGoogleRoute(p1[0],p1[1],p2[0],p2[1]);
+            if(allPts.length===0) allPts.push(...pts);
+            else allPts.push(...pts.slice(1));
         }
-        return allCoords;
+        return allPts;
     }
-
-    // Otherwise route directly from start to end
-    return await getRoadRoute(segment.fromLat, segment.fromLng, segment.toLat, segment.toLng);
+    return await getGoogleRoute(seg.fromLat,seg.fromLng,seg.toLat,seg.toLng);
 }
 
 // ==================== FIND TRANSIT ====================
@@ -304,11 +324,8 @@ async function findTransit(){
     try{
         const r=await fetch(`${API}/transit?source=${selSrc.id}&destination=${selDst.id}`);
         const options=await r.json();
-        if(options.length>0){
-            renderOptions(options);
-        } else {
-            document.getElementById('results').innerHTML='<div class="empty"><div class="eicon">❌</div><h3>No routes found</h3></div>';
-        }
+        if(options.length>0) renderOptions(options);
+        else document.getElementById('results').innerHTML='<div class="empty"><div class="eicon">❌</div><h3>No routes found</h3></div>';
     }catch(e){
         document.getElementById('results').innerHTML='<div class="empty"><div class="eicon">⚠️</div><h3>API Error</h3><p>Is the backend running?</p></div>';
     }
@@ -318,9 +335,9 @@ function renderOptions(options){
     const c=document.getElementById('results');
     c.innerHTML=options.map((opt,idx)=>{
         const segStrip=opt.segments.map((seg,si)=>{
-            if(seg.type==='walk')return `<span class="seg-walk"><span class="wicon">🚶</span>${seg.durationMinutes}m</span>${si<opt.segments.length-1?'<span class="seg-arrow">›</span>':''}`;
+            if(seg.type==='walk')return `<span class="seg-walk">🚶${seg.durationMinutes}m</span>${si<opt.segments.length-1?'<span class="seg-arrow">›</span>':''}`;
             const ci=si%COLORS.length;
-            return `<span class="seg-bus"><span class="bicon">🚌</span><span class="bus-badge ${COLOR_NAMES[ci]}">${seg.busNumber}</span></span>${si<opt.segments.length-1?'<span class="seg-arrow">›</span>':''}`;
+            return `<span class="seg-bus">🚌<span class="bus-badge c${ci}">${seg.busNumber}</span></span>${si<opt.segments.length-1?'<span class="seg-arrow">›</span>':''}`;
         }).join('');
 
         const detail=opt.segments.map((seg,si)=>{
@@ -330,15 +347,15 @@ function renderOptions(options){
         }).join('');
 
         return `
-        <div class="tcard${idx===0?' active':''}" onclick="selectOption(${idx})" data-idx="${idx}">
+        <div class="tcard${idx===0?' active':''}" onclick="selectOpt(${idx})">
             ${idx===0?`<div class="tcard-label">${opt.label}</div>`:''}
             <div class="tcard-top">
                 <span class="tcard-time">${opt.departureTime} — ${opt.arrivalTime}</span>
-                <span class="tcard-dur">${formatDur(opt.totalDurationMinutes)}</span>
+                <span class="tcard-dur">${fmtDur(opt.totalDurationMinutes)}</span>
             </div>
             <div class="seg-strip">${segStrip}</div>
             <div class="tcard-info">
-                <span>💰 Rs. ${opt.totalCostRs}</span>
+                <span>💰 Rs.${opt.totalCostRs}</span>
                 <span>📍 ${opt.totalStops} stops</span>
                 <span>🔄 ${opt.transfers} transfer${opt.transfers!==1?'s':''}</span>
             </div>
@@ -346,102 +363,174 @@ function renderOptions(options){
         </div>`;
     }).join('');
 
-    activeCard=0;
-    window._transitOptions=options;
-    drawTransitOnMap(options[0]);
+    window._opts=options;
+    drawRoute(options[0]);
 }
 
-function selectOption(idx){
+function selectOpt(idx){
     document.querySelectorAll('.tcard').forEach((c,i)=>c.classList.toggle('active',i===idx));
-    activeCard=idx;
-    drawTransitOnMap(window._transitOptions[idx]);
+    drawRoute(window._opts[idx]);
 }
 
-function formatDur(m){
-    if(m<60)return m+' min';
-    const h=Math.floor(m/60),rm=m%60;
-    return h+'h '+rm+'m';
-}
+function fmtDur(m){if(m<60)return m+' min';return Math.floor(m/60)+'h '+m%60+'m'}
 
-// ==================== DRAW ROUTE ON MAP (Real Roads via OSRM) ====================
-async function drawTransitOnMap(opt){
-    routeLayers.forEach(l=>map.removeLayer(l));routeLayers=[];
-    const bounds=[];
+// ==================== DRAW ON GOOGLE MAP ====================
+async function drawRoute(opt){
+    // Clear previous
+    routeOverlays.forEach(o=>o.setMap(null));routeOverlays=[];
+    routeRenderers.forEach(r=>r.setMap(null));routeRenderers=[];
 
-    // Show loading
-    document.getElementById('mapLoading').classList.add('show');
+    const bounds=new google.maps.LatLngBounds();
 
-    for(let si=0; si<opt.segments.length; si++){
+    for(let si=0;si<opt.segments.length;si++){
         const seg=opt.segments[si];
-        const from=[seg.fromLat,seg.fromLng], to=[seg.toLat,seg.toLng];
-        bounds.push(from,to);
+        const from=new google.maps.LatLng(seg.fromLat,seg.fromLng);
+        const to=new google.maps.LatLng(seg.toLat,seg.toLng);
+        bounds.extend(from);bounds.extend(to);
 
         if(seg.type==='walk'){
-            // Walking: dashed line (straight is OK for walking)
-            const line=L.polyline([from,to],{
-                color:'#94a3b8',weight:4,dashArray:'8,10',opacity:.7
-            }).addTo(map);
-            routeLayers.push(line);
-
+            // Walking: dashed line
+            const walkLine=new google.maps.Polyline({
+                path:[from,to],
+                strokeColor:'#666666',
+                strokeOpacity:0,
+                icons:[{
+                    icon:{path:'M 0,-1 0,1',strokeOpacity:0.6,strokeColor:'#888',scale:3},
+                    offset:'0',repeat:'12px'
+                }],
+                map:gmap
+            });
+            routeOverlays.push(walkLine);
         } else {
-            // BUS: Get real road geometry from OSRM
+            // BUS: Get real road path from Google Directions
             const ci=si%COLORS.length;
-            const roadCoords = await getFullBusRoute(seg);
+            const roadPath=await getFullBusRoad(seg);
 
-            // Add all road points to bounds
-            roadCoords.forEach(p=>bounds.push(p));
+            roadPath.forEach(p=>bounds.extend(p));
 
-            // Draw thick road-following polyline (like Google Maps)
-            // Shadow line (wider, darker)
-            const shadow=L.polyline(roadCoords,{
-                color:'rgba(0,0,0,0.3)',weight:10,opacity:1,lineCap:'round',lineJoin:'round'
-            }).addTo(map);
-            routeLayers.push(shadow);
+            // Shadow polyline
+            const shadow=new google.maps.Polyline({
+                path:roadPath,
+                strokeColor:'#000000',
+                strokeOpacity:0.2,
+                strokeWeight:10,
+                map:gmap
+            });
+            routeOverlays.push(shadow);
 
-            // Main colored line
-            const line=L.polyline(roadCoords,{
-                color:COLORS[ci],weight:7,opacity:0.9,lineCap:'round',lineJoin:'round'
-            }).addTo(map);
-            routeLayers.push(line);
+            // Main colored polyline (thick, on the road)
+            const mainLine=new google.maps.Polyline({
+                path:roadPath,
+                strokeColor:COLORS[ci],
+                strokeOpacity:0.85,
+                strokeWeight:7,
+                map:gmap
+            });
+            routeOverlays.push(mainLine);
+
+            // Board marker
+            const boardMarker=new google.maps.Marker({
+                position:from,
+                map:gmap,
+                title:'Board: '+seg.fromStop,
+                icon:{
+                    path:google.maps.SymbolPath.CIRCLE,
+                    scale:8,
+                    fillColor:COLORS[ci],
+                    fillOpacity:1,
+                    strokeColor:'#fff',
+                    strokeWeight:2
+                }
+            });
+            const boardInfo=new google.maps.InfoWindow({
+                content:`<div style="font-family:'DM Sans';padding:4px"><b>🚌 Board here</b><br>${seg.fromStop}<br><span style="color:${COLORS[ci]};font-weight:700">Bus ${seg.busNumber}</span></div>`
+            });
+            boardMarker.addListener('click',()=>boardInfo.open(gmap,boardMarker));
+            routeOverlays.push(boardMarker);
+
+            // Alight marker
+            const alightMarker=new google.maps.Marker({
+                position:to,
+                map:gmap,
+                title:'Alight: '+seg.toStop,
+                icon:{
+                    path:google.maps.SymbolPath.CIRCLE,
+                    scale:8,
+                    fillColor:COLORS[ci],
+                    fillOpacity:1,
+                    strokeColor:'#fff',
+                    strokeWeight:2
+                }
+            });
+            const alightInfo=new google.maps.InfoWindow({
+                content:`<div style="font-family:'DM Sans';padding:4px"><b>🔽 Get off here</b><br>${seg.toStop}<br><span style="color:${COLORS[ci]};font-weight:700">Bus ${seg.busNumber}</span></div>`
+            });
+            alightMarker.addListener('click',()=>alightInfo.open(gmap,alightMarker));
+            routeOverlays.push(alightMarker);
 
             // Bus number label at midpoint
-            const midIdx=Math.floor(roadCoords.length/2);
-            const mid=roadCoords[midIdx];
-            const lbl=L.divIcon({
-                html:`<div style="background:${COLORS[ci]};color:white;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.5)">🚌 ${seg.busNumber}</div>`,
-                className:'',iconAnchor:[20,-5]
+            const midIdx=Math.floor(roadPath.length/2);
+            const midPt=roadPath[midIdx];
+            const busLabel=new google.maps.Marker({
+                position:midPt,
+                map:gmap,
+                icon:{
+                    url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="28">
+                            <rect width="80" height="28" rx="14" fill="${COLORS[ci]}"/>
+                            <text x="40" y="18" text-anchor="middle" fill="white" font-family="monospace" font-size="12" font-weight="bold">🚌 ${seg.busNumber}</text>
+                        </svg>`),
+                    scaledSize:new google.maps.Size(80,28),
+                    anchor:new google.maps.Point(40,14)
+                }
             });
-            const lm=L.marker(mid,{icon:lbl,interactive:false}).addTo(map);
-            routeLayers.push(lm);
-
-            // Board stop marker
-            const sm=L.marker(from,{icon:mkIcon(COLORS[ci],14)}).addTo(map);
-            sm.bindPopup(`<div style="font-family:'DM Sans';"><b>🚌 Board here</b><br>${seg.fromStop}<br><span style="color:#3b82f6;font-weight:700">Bus ${seg.busNumber}</span></div>`);
-            routeLayers.push(sm);
-
-            // Alight stop marker
-            const em=L.marker(to,{icon:mkIcon(COLORS[ci],14)}).addTo(map);
-            em.bindPopup(`<div style="font-family:'DM Sans';"><b>🔽 Get off here</b><br>${seg.toStop}<br><span style="color:#3b82f6;font-weight:700">Bus ${seg.busNumber}</span></div>`);
-            routeLayers.push(em);
+            routeOverlays.push(busLabel);
         }
     }
 
-    // Start & End big markers
+    // START marker (green)
     if(opt.segments.length>0){
         const first=opt.segments[0];
+        const startM=new google.maps.Marker({
+            position:{lat:first.fromLat,lng:first.fromLng},
+            map:gmap,
+            title:'Start',
+            icon:{
+                path:google.maps.SymbolPath.CIRCLE,
+                scale:12,
+                fillColor:'#22c55e',
+                fillOpacity:1,
+                strokeColor:'#fff',
+                strokeWeight:3
+            },
+            zIndex:999
+        });
+        const startInfo=new google.maps.InfoWindow({content:'<b>📍 Start Point</b>'});
+        startM.addListener('click',()=>startInfo.open(gmap,startM));
+        routeOverlays.push(startM);
+
+        // END marker (red)
         const last=opt.segments[opt.segments.length-1];
-
-        const startM=L.marker([first.fromLat,first.fromLng],{icon:mkIcon('#22c55e',20)}).addTo(map);
-        startM.bindPopup('<b>📍 Start</b>');routeLayers.push(startM);
-
-        const endM=L.marker([last.toLat,last.toLng],{icon:mkIcon('#ef4444',20)}).addTo(map);
-        endM.bindPopup('<b>🎯 Destination</b>');routeLayers.push(endM);
+        const endM=new google.maps.Marker({
+            position:{lat:last.toLat,lng:last.toLng},
+            map:gmap,
+            title:'Destination',
+            icon:{
+                path:google.maps.SymbolPath.CIRCLE,
+                scale:12,
+                fillColor:'#ef4444',
+                fillOpacity:1,
+                strokeColor:'#fff',
+                strokeWeight:3
+            },
+            zIndex:999
+        });
+        const endInfo=new google.maps.InfoWindow({content:'<b>🎯 Destination</b>'});
+        endM.addListener('click',()=>endInfo.open(gmap,endM));
+        routeOverlays.push(endM);
     }
 
-    // Hide loading
-    document.getElementById('mapLoading').classList.remove('show');
-
-    if(bounds.length)map.fitBounds(bounds,{padding:[60,60]});
+    gmap.fitBounds(bounds,{top:60,right:60,bottom:60,left:60});
 }
 </script>
 </body>
