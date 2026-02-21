@@ -115,17 +115,32 @@ public class TransitService {
      * Find all transit options (like Google Maps transit tab).
      * Returns multiple route options with different strategies.
      */
-    public List<TransitOption> findTransitOptions(String sourceId, String destId) {
+    public List<TransitOption> findTransitOptions(String sourceId,
+                                                  String destId,
+                                                  String mode) {
         List<TransitOption> options = new ArrayList<>();
 
         // Get alternative routes from existing service
-        List<RouteResponse> routes = routeService.getAlternativeRoutes(sourceId, destId);
+        List<RouteResponse> routes = new ArrayList<>();
 
-        if (routes.isEmpty()) {
-            // Try single dijkstra
-            RouteRequest req = new RouteRequest(sourceId, destId, "dijkstra", "time", false);
-            RouteResponse single = routeService.findRoute(req);
-            if (single.isFound()) routes.add(single);
+// Primary route using selected mode
+        RouteRequest mainRequest =
+                new RouteRequest(sourceId, destId, "dijkstra", mode, false);
+
+        RouteResponse mainRoute = routeService.findRoute(mainRequest);
+
+        if (mainRoute.isFound()) {
+            routes.add(mainRoute);
+        }
+
+// Add A* alternative using same mode
+        RouteRequest aStarRequest =
+                new RouteRequest(sourceId, destId, "astar", mode, false);
+
+        RouteResponse aStarRoute = routeService.findRoute(aStarRequest);
+
+        if (aStarRoute.isFound()) {
+            routes.add(aStarRoute);
         }
 
         // Convert each route to a TransitOption
