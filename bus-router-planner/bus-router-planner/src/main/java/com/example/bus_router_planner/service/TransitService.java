@@ -118,12 +118,11 @@ public class TransitService {
     public List<TransitOption> findTransitOptions(String sourceId,
                                                   String destId,
                                                   String mode) {
-        List<TransitOption> options = new ArrayList<>();
 
-        // Get alternative routes from existing service
+        List<TransitOption> options = new ArrayList<>();
         List<RouteResponse> routes = new ArrayList<>();
 
-// Primary route using selected mode
+        // Dijkstra route
         RouteRequest mainRequest =
                 new RouteRequest(sourceId, destId, "dijkstra", mode, false);
 
@@ -133,7 +132,7 @@ public class TransitService {
             routes.add(mainRoute);
         }
 
-// Add A* alternative using same mode
+        // A* route
         RouteRequest aStarRequest =
                 new RouteRequest(sourceId, destId, "astar", mode, false);
 
@@ -143,17 +142,21 @@ public class TransitService {
             routes.add(aStarRoute);
         }
 
-        // Convert each route to a TransitOption
-        String[] labels = {"Fastest Route", "Cheapest Route", "Fewest Transfers", "Shortest Distance"};
+        String[] labels = {"Primary Route", "Alternative Route"};
         LocalTime now = LocalTime.now();
 
         for (int i = 0; i < routes.size(); i++) {
             RouteResponse route = routes.get(i);
             if (!route.isFound() || route.getPath() == null) continue;
 
-            // Stagger departure times (simulate schedules)
-            LocalTime departure = now.plusMinutes(5 + (i * 13));
-            TransitOption option = buildTransitOption(route, departure, i < labels.length ? labels[i] : "Alternative " + (i + 1));
+            LocalTime departure = now.plusMinutes(5 + (i * 10));
+
+            TransitOption option = buildTransitOption(
+                    route,
+                    departure,
+                    i < labels.length ? labels[i] : "Alternative " + (i + 1)
+            );
+
             options.add(option);
         }
 
