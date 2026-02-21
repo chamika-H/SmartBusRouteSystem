@@ -200,6 +200,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);height:100vh;overflow
                 <input class="sinput" id="dstIn" placeholder="Where to?" autocomplete="off">
                 <div class="aclist" id="dstAC"></div>
             </div>
+            <select class="sinput" id="routeMode" style="padding-left:10px;margin-top:8px">
+                <option value="distance">🔵 Shortest Distance</option>
+                <option value="time">🟢 Fastest Time</option>
+                <option value="cost">🟣 Cheapest Cost</option>
+            </select>
             <button class="go-btn" onclick="findTransit()" data-i18n="search">🔎 Search Bus Routes</button>
         </div>
         <div id="results"><div class="empty"><div class="eicon">🗺️</div><h3 data-i18n="searchHint">Search for a bus route</h3><p>Nugegoda → Fort Railway Station</p></div></div>
