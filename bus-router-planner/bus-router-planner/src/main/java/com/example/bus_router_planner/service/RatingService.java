@@ -17,19 +17,19 @@ public class RatingService {
     private final Map<String, List<Map<String, Object>>> ratings = new ConcurrentHashMap<>();
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public RatingService() {
-        // Seed some sample ratings
-        addRating("100", 4, 5, 4, "Clean bus, good driver");
-        addRating("100", 3, 4, 3, "Bit crowded but on time");
-        addRating("138", 5, 5, 5, "Excellent service!");
-        addRating("138", 4, 3, 4, "Good overall");
-        addRating("183", 3, 4, 3, "Average condition");
-        addRating("224", 4, 4, 5, "Very punctual");
-        addRating("255", 2, 3, 2, "Bus was late and dirty");
-        addRating("400", 5, 5, 4, "Express service, fast");
-        addRating("192", 3, 3, 3, "Normal service");
-        addRating("1", 4, 4, 4, "Long route but comfortable");
-    }
+//    public RatingService() {
+//        // Seed some sample ratings
+//        addRating("100", 4, 5, 4, "Clean bus, good driver");
+//        addRating("100", 3, 4, 3, "Bit crowded but on time");
+//        addRating("138", 5, 5, 5, "Excellent service!");
+//        addRating("138", 4, 3, 4, "Good overall");
+//        addRating("183", 3, 4, 3, "Average condition");
+//        addRating("224", 4, 4, 5, "Very punctual");
+//        addRating("255", 2, 3, 2, "Bus was late and dirty");
+//        addRating("400", 5, 5, 4, "Express service, fast");
+//        addRating("192", 3, 3, 3, "Normal service");
+//        addRating("1", 4, 4, 4, "Long route but comfortable");
+//    }
     /**
      * Add a new rating
      */
