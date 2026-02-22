@@ -14,6 +14,13 @@ public class RouteResponse {
     private String mode;
     private String message;
 
+
+    // Add these fields to RouteResponse.java
+    private String crowdLevel;
+    private int seatsAvailable;
+    private String crowdMessage;
+
+    // Add getters/setters for all three
     public RouteResponse() {}
 
     public RouteResponse(
@@ -113,4 +120,30 @@ public class RouteResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public String getCrowdLevel() {
+        return crowdLevel;
+    }
+
+    public void setCrowdLevel(String crowdLevel) {
+        this.crowdLevel = crowdLevel;
+    }
+
+    public int getSeatsAvailable() {
+        return seatsAvailable;
+    }
+
+    public void setSeatsAvailable(int seatsAvailable) {
+        this.seatsAvailable = seatsAvailable;
+    }
+
+    public String getCrowdMessage() {
+        return crowdMessage;
+    }
+
+    public void setCrowdMessage(String crowdMessage) {
+        this.crowdMessage = crowdMessage;
+    }
+
+
 }
