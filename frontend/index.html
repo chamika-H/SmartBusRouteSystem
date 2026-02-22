@@ -157,20 +157,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);height:100vh;overflow
 .legend .litem{display:flex;align-items:center;gap:4px;margin-bottom:2px;color:var(--sub)}
 .legend .ldot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-<!--/* Rating panel */-->
-<!--.star-rating{display:flex;gap:6px;margin:6px 0}-->
-<!--.star-rating span{font-size:22px;cursor:pointer;transition:transform .1s}-->
-<!--.star-rating span:hover,.star-rating span.selected{transform:scale(1.2)}-->
-<!--.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}-->
-<!--.rating-bar-track{flex:1;background:var(&#45;&#45;border);border-radius:4px;height:7px;overflow:hidden}-->
-<!--.rating-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#f59e0b,#fbbf24);transition:width .5s}-->
-<!--.review-card{background:var(&#45;&#45;bg);border:1px solid var(&#45;&#45;border);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}-->
-<!--.review-card .rc-head{display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;color:var(&#45;&#45;dim)}-->
-<!--.review-card .rc-stars{color:#f59e0b;letter-spacing:1px}-->
-<!--.review-card .rc-comment{color:var(&#45;&#45;sub);margin-top:4px}-->
-<!--.top-bus-card{display:flex;align-items:center;gap:10px;background:var(&#45;&#45;bg);border:1px solid var(&#45;&#45;border);border-radius:8px;padding:10px;margin-bottom:6px;cursor:pointer;transition:border-color .2s}-->
-<!--.top-bus-card:hover{border-color:var(&#45;&#45;accent)}-->
-<!--.top-bus-num{min-width:44px;height:44px;background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white}-->
+/* Rating panel */
+.star-rating{display:flex;gap:6px;margin:6px 0}
+.star-rating span{font-size:22px;cursor:pointer;transition:transform .1s}
+.star-rating span:hover,.star-rating span.selected{transform:scale(1.2)}
+.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.rating-bar-track{flex:1;background:var(--border);border-radius:4px;height:7px;overflow:hidden}
+.rating-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#f59e0b,#fbbf24);transition:width .5s}
+.review-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
+.review-card .rc-head{display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;color:var(--dim)}
+.review-card .rc-stars{color:#f59e0b;letter-spacing:1px}
+.review-card .rc-comment{color:var(--sub);margin-top:4px}
+.top-bus-card{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:6px;cursor:pointer;transition:border-color .2s}
+.top-bus-card:hover{border-color:var(--accent)}
+.top-bus-num{min-width:44px;height:44px;background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white}
 
 /* Ticket panel */
 .ticket-card{background:linear-gradient(135deg,var(--accent),#0ea5e9);border-radius:12px;padding:16px;color:white;margin:12px 16px;position:relative;overflow:hidden}
@@ -302,59 +302,59 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);height:100vh;overflow
         <div id="crowdResult"></div>
     </div>
 
-<!--    &lt;!&ndash; RATING PANEL &ndash;&gt;-->
-<!--    <div class="panel" id="p-rating">-->
-<!--        <div class="search" style="padding:12px 16px">-->
-<!--            <label style="color:var(&#45;&#45;dim);font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:4px;display:block">Bus Number</label>-->
-<!--            <input class="sinput" id="ratingBusNum" placeholder="e.g. 100, 138, 400..." style="padding-left:10px" value="100">-->
-<!--            <button class="go-btn" onclick="loadBusRatings()" style="margin-top:8px">⭐ Load Ratings</button>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; Top rated buses &ndash;&gt;-->
-<!--        <div style="padding:0 16px 8px">-->
-<!--            <div style="font-size:11px;font-weight:700;color:var(&#45;&#45;dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🏆 Top Rated Buses</div>-->
-<!--            <div id="topBusList"><div class="loading"><div class="spinner"></div></div></div>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; Ratings for selected bus &ndash;&gt;-->
-<!--        <div id="busRatingDetail" style="display:none;padding:0 16px 16px">-->
-<!--            <div style="height:1px;background:var(&#45;&#45;border);margin:8px 0"></div>-->
-<!--            <div id="busRatingHeader"></div>-->
-<!--            <div id="busRatingBars" style="margin:10px 0"></div>-->
-<!--            &lt;!&ndash; Submit new rating &ndash;&gt;-->
-<!--            <div style="background:var(&#45;&#45;bg);border:1px solid var(&#45;&#45;border);border-radius:8px;padding:12px;margin:10px 0">-->
-<!--                <div style="font-size:11px;font-weight:700;color:var(&#45;&#45;dim);text-transform:uppercase;margin-bottom:8px">Rate This Bus</div>-->
-<!--                <div style="font-size:12px;margin-bottom:4px;color:var(&#45;&#45;sub)">Cleanliness</div>-->
-<!--                <div class="star-rating" id="starsCleanliness">-->
-<!--                    <span onclick="setStar('cleanliness',1)" data-val="1">☆</span>-->
-<!--                    <span onclick="setStar('cleanliness',2)" data-val="2">☆</span>-->
-<!--                    <span onclick="setStar('cleanliness',3)" data-val="3">☆</span>-->
-<!--                    <span onclick="setStar('cleanliness',4)" data-val="4">☆</span>-->
-<!--                    <span onclick="setStar('cleanliness',5)" data-val="5">☆</span>-->
-<!--                </div>-->
-<!--                <div style="font-size:12px;margin-bottom:4px;color:var(&#45;&#45;sub)">Driver</div>-->
-<!--                <div class="star-rating" id="starsDriver">-->
-<!--                    <span onclick="setStar('driver',1)" data-val="1">☆</span>-->
-<!--                    <span onclick="setStar('driver',2)" data-val="2">☆</span>-->
-<!--                    <span onclick="setStar('driver',3)" data-val="3">☆</span>-->
-<!--                    <span onclick="setStar('driver',4)" data-val="4">☆</span>-->
-<!--                    <span onclick="setStar('driver',5)" data-val="5">☆</span>-->
-<!--                </div>-->
-<!--                <div style="font-size:12px;margin-bottom:4px;color:var(&#45;&#45;sub)">Punctuality</div>-->
-<!--                <div class="star-rating" id="starsPunctuality">-->
-<!--                    <span onclick="setStar('punctuality',1)" data-val="1">☆</span>-->
-<!--                    <span onclick="setStar('punctuality',2)" data-val="2">☆</span>-->
-<!--                    <span onclick="setStar('punctuality',3)" data-val="3">☆</span>-->
-<!--                    <span onclick="setStar('punctuality',4)" data-val="4">☆</span>-->
-<!--                    <span onclick="setStar('punctuality',5)" data-val="5">☆</span>-->
-<!--                </div>-->
-<!--                <input class="sinput" id="ratingComment" placeholder="Write a comment (optional)..." style="padding-left:10px;margin-top:8px">-->
-<!--                <button class="go-btn" onclick="submitRating()" style="margin-top:8px">✅ Submit Rating</button>-->
-<!--                <div id="ratingMsg" style="font-size:12px;margin-top:6px;text-align:center"></div>-->
-<!--            </div>-->
-<!--            &lt;!&ndash; Recent reviews &ndash;&gt;-->
-<!--            <div style="font-size:11px;font-weight:700;color:var(&#45;&#45;dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Recent Reviews</div>-->
-<!--            <div id="reviewsList"></div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- RATING PANEL -->
+    <div class="panel" id="p-rating">
+        <div class="search" style="padding:12px 16px">
+            <label style="color:var(--dim);font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:4px;display:block">Bus Number</label>
+            <input class="sinput" id="ratingBusNum" placeholder="e.g. 100, 138, 400..." style="padding-left:10px" value="100">
+            <button class="go-btn" onclick="loadBusRatings()" style="margin-top:8px">⭐ Load Ratings</button>
+        </div>
+        <!-- Top rated buses -->
+        <div style="padding:0 16px 8px">
+            <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🏆 Top Rated Buses</div>
+            <div id="topBusList"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+        <!-- Ratings for selected bus -->
+        <div id="busRatingDetail" style="display:none;padding:0 16px 16px">
+            <div style="height:1px;background:var(--border);margin:8px 0"></div>
+            <div id="busRatingHeader"></div>
+            <div id="busRatingBars" style="margin:10px 0"></div>
+            <!-- Submit new rating -->
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0">
+                <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:8px">Rate This Bus</div>
+                <div style="font-size:12px;margin-bottom:4px;color:var(--sub)">Cleanliness</div>
+                <div class="star-rating" id="starsCleanliness">
+                    <span onclick="setStar('cleanliness',1)" data-val="1">☆</span>
+                    <span onclick="setStar('cleanliness',2)" data-val="2">☆</span>
+                    <span onclick="setStar('cleanliness',3)" data-val="3">☆</span>
+                    <span onclick="setStar('cleanliness',4)" data-val="4">☆</span>
+                    <span onclick="setStar('cleanliness',5)" data-val="5">☆</span>
+                </div>
+                <div style="font-size:12px;margin-bottom:4px;color:var(--sub)">Driver</div>
+                <div class="star-rating" id="starsDriver">
+                    <span onclick="setStar('driver',1)" data-val="1">☆</span>
+                    <span onclick="setStar('driver',2)" data-val="2">☆</span>
+                    <span onclick="setStar('driver',3)" data-val="3">☆</span>
+                    <span onclick="setStar('driver',4)" data-val="4">☆</span>
+                    <span onclick="setStar('driver',5)" data-val="5">☆</span>
+                </div>
+                <div style="font-size:12px;margin-bottom:4px;color:var(--sub)">Punctuality</div>
+                <div class="star-rating" id="starsPunctuality">
+                    <span onclick="setStar('punctuality',1)" data-val="1">☆</span>
+                    <span onclick="setStar('punctuality',2)" data-val="2">☆</span>
+                    <span onclick="setStar('punctuality',3)" data-val="3">☆</span>
+                    <span onclick="setStar('punctuality',4)" data-val="4">☆</span>
+                    <span onclick="setStar('punctuality',5)" data-val="5">☆</span>
+                </div>
+                <input class="sinput" id="ratingComment" placeholder="Write a comment (optional)..." style="padding-left:10px;margin-top:8px">
+                <button class="go-btn" onclick="submitRating()" style="margin-top:8px">✅ Submit Rating</button>
+                <div id="ratingMsg" style="font-size:12px;margin-top:6px;text-align:center"></div>
+            </div>
+            <!-- Recent reviews -->
+            <div style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Recent Reviews</div>
+            <div id="reviewsList"></div>
+        </div>
+    </div>
 
     <!-- TICKET PANEL -->
     <div class="panel" id="p-ticket">
@@ -930,131 +930,131 @@ document.querySelectorAll('#p-more .tabs .tab').forEach(t=>t.addEventListener('c
 
 
 
-<!--    // ===== RATING SERVICE =====-->
-<!--const ratingState = { cleanliness: 0, driver: 0, punctuality: 0 };-->
+    // ===== RATING SERVICE =====
+const ratingState = { cleanliness: 0, driver: 0, punctuality: 0 };
 
-<!--function setStar(category, val) {-->
-<!--    ratingState[category] = val;-->
-<!--    const containerId = 'stars' + category.charAt(0).toUpperCase() + category.slice(1);-->
-<!--    document.querySelectorAll('#' + containerId + ' span').forEach((s, i) => {-->
-<!--        s.textContent = i < val ? '⭐' : '☆';-->
-<!--        s.classList.toggle('selected', i < val);-->
-<!--    });-->
-<!--}-->
+function setStar(category, val) {
+    ratingState[category] = val;
+    const containerId = 'stars' + category.charAt(0).toUpperCase() + category.slice(1);
+    document.querySelectorAll('#' + containerId + ' span').forEach((s, i) => {
+        s.textContent = i < val ? '⭐' : '☆';
+        s.classList.toggle('selected', i < val);
+    });
+}
 
-<!--async function loadTopBuses() {-->
-<!--    try {-->
-<!--        const r = await fetch(`${API}/ratings/top`);-->
-<!--        const buses = await r.json();-->
-<!--        const el = document.getElementById('topBusList');-->
-<!--        if (!buses.length) { el.innerHTML = '<div class="empty"><h3>No ratings yet</h3></div>'; return; }-->
-<!--        el.innerHTML = buses.slice(0, 5).map((b, i) => `-->
-<!--            <div class="top-bus-card" onclick="selectTopBus('${b.busNumber}')">-->
-<!--                <div class="top-bus-num">${b.busNumber}</div>-->
-<!--                <div style="flex:1">-->
-<!--                    <div style="font-size:13px;font-weight:600;color:var(&#45;&#45;txt)">Bus ${b.busNumber}</div>-->
-<!--                    <div style="font-size:11px;color:var(&#45;&#45;dim)">${b.totalReviews} reviews</div>-->
-<!--                </div>-->
-<!--                <div style="text-align:right">-->
-<!--                    <div style="font-size:15px;font-weight:700;color:#f59e0b">${b.avgOverall} ⭐</div>-->
-<!--                    <div style="font-size:10px;color:var(&#45;&#45;dim)">#${i+1} rated</div>-->
-<!--                </div>-->
-<!--            </div>`).join('');-->
-<!--    } catch(e) {-->
-<!--        document.getElementById('topBusList').innerHTML = '<div style="font-size:12px;color:var(&#45;&#45;dim);padding:8px">Could not load ratings. Is the backend running?</div>';-->
-<!--    }-->
-<!--}-->
+async function loadTopBuses() {
+    try {
+        const r = await fetch(`${API}/ratings/top`);
+        const buses = await r.json();
+        const el = document.getElementById('topBusList');
+        if (!buses.length) { el.innerHTML = '<div class="empty"><h3>No ratings yet</h3></div>'; return; }
+        el.innerHTML = buses.slice(0, 5).map((b, i) => `
+            <div class="top-bus-card" onclick="selectTopBus('${b.busNumber}')">
+                <div class="top-bus-num">${b.busNumber}</div>
+                <div style="flex:1">
+                    <div style="font-size:13px;font-weight:600;color:var(--txt)">Bus ${b.busNumber}</div>
+                    <div style="font-size:11px;color:var(--dim)">${b.totalReviews} reviews</div>
+                </div>
+                <div style="text-align:right">
+                    <div style="font-size:15px;font-weight:700;color:#f59e0b">${b.avgOverall} ⭐</div>
+                    <div style="font-size:10px;color:var(--dim)">#${i+1} rated</div>
+                </div>
+            </div>`).join('');
+    } catch(e) {
+        document.getElementById('topBusList').innerHTML = '<div style="font-size:12px;color:var(--dim);padding:8px">Could not load ratings. Is the backend running?</div>';
+    }
+}
 
-<!--function selectTopBus(busNum) {-->
-<!--    document.getElementById('ratingBusNum').value = busNum;-->
-<!--    loadBusRatings();-->
-<!--}-->
+function selectTopBus(busNum) {
+    document.getElementById('ratingBusNum').value = busNum;
+    loadBusRatings();
+}
 
-<!--async function loadBusRatings() {-->
-<!--    const busNum = document.getElementById('ratingBusNum').value.trim();-->
-<!--    if (!busNum) { alert('Please enter a bus number'); return; }-->
-<!--    try {-->
-<!--        const r = await fetch(`${API}/ratings/${busNum}`);-->
-<!--        const d = await r.json();-->
-<!--        document.getElementById('busRatingDetail').style.display = 'block';-->
+async function loadBusRatings() {
+    const busNum = document.getElementById('ratingBusNum').value.trim();
+    if (!busNum) { alert('Please enter a bus number'); return; }
+    try {
+        const r = await fetch(`${API}/ratings/${busNum}`);
+        const d = await r.json();
+        document.getElementById('busRatingDetail').style.display = 'block';
 
-<!--        // Header-->
-<!--        const stars = '⭐'.repeat(Math.round(d.avgOverall));-->
-<!--        document.getElementById('busRatingHeader').innerHTML = `-->
-<!--            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">-->
-<!--                <div style="width:56px;height:56px;background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white">${busNum}</div>-->
-<!--                <div>-->
-<!--                    <div style="font-size:20px">${stars || '☆☆☆☆☆'}</div>-->
-<!--                    <div style="font-size:22px;font-weight:700;color:var(&#45;&#45;txt)">${d.avgOverall}/5</div>-->
-<!--                    <div style="font-size:11px;color:var(&#45;&#45;dim)">${d.totalReviews} reviews</div>-->
-<!--                </div>-->
-<!--            </div>`;-->
+        // Header
+        const stars = '⭐'.repeat(Math.round(d.avgOverall));
+        document.getElementById('busRatingHeader').innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+                <div style="width:56px;height:56px;background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white">${busNum}</div>
+                <div>
+                    <div style="font-size:20px">${stars || '☆☆☆☆☆'}</div>
+                    <div style="font-size:22px;font-weight:700;color:var(--txt)">${d.avgOverall}/5</div>
+                    <div style="font-size:11px;color:var(--dim)">${d.totalReviews} reviews</div>
+                </div>
+            </div>`;
 
-<!--        // Rating bars-->
-<!--        const bars = [-->
-<!--            { label: 'Cleanliness', val: d.avgCleanliness },-->
-<!--            { label: 'Driver',      val: d.avgDriver },-->
-<!--            { label: 'Punctuality', val: d.avgPunctuality }-->
-<!--        ];-->
-<!--        document.getElementById('busRatingBars').innerHTML = bars.map(b => `-->
-<!--            <div class="rating-bar-row">-->
-<!--                <span style="width:80px">${b.label}</span>-->
-<!--                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${b.val/5*100}%"></div></div>-->
-<!--                <span style="font-size:12px;font-weight:700;color:#f59e0b">${b.val}</span>-->
-<!--            </div>`).join('');-->
+        // Rating bars
+        const bars = [
+            { label: 'Cleanliness', val: d.avgCleanliness },
+            { label: 'Driver',      val: d.avgDriver },
+            { label: 'Punctuality', val: d.avgPunctuality }
+        ];
+        document.getElementById('busRatingBars').innerHTML = bars.map(b => `
+            <div class="rating-bar-row">
+                <span style="width:80px">${b.label}</span>
+                <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${b.val/5*100}%"></div></div>
+                <span style="font-size:12px;font-weight:700;color:#f59e0b">${b.val}</span>
+            </div>`).join('');
 
-<!--        // Reviews list-->
-<!--        const reviews = d.reviews || [];-->
-<!--        document.getElementById('reviewsList').innerHTML = reviews.length ? reviews.map(rv => `-->
-<!--            <div class="review-card">-->
-<!--                <div class="rc-head">-->
-<!--                    <span class="rc-stars">${'⭐'.repeat(Math.round(rv.overall))}</span>-->
-<!--                    <span>${rv.timestamp}</span>-->
-<!--                </div>-->
-<!--                <div style="font-size:11px;color:var(&#45;&#45;sub)">-->
-<!--                    🧹 Cleanliness: ${rv.cleanliness} &nbsp;|&nbsp; 🚌 Driver: ${rv.driver} &nbsp;|&nbsp; ⏱️ Punctuality: ${rv.punctuality}-->
-<!--                </div>-->
-<!--                ${rv.comment ? `<div class="rc-comment">"${rv.comment}"</div>` : ''}-->
-<!--            </div>`).join('') : '<div style="font-size:12px;color:var(&#45;&#45;dim);padding:8px">No reviews yet. Be the first!</div>';-->
-<!--    } catch(e) {-->
-<!--        alert('Could not load ratings. Make sure the backend is running.');-->
-<!--    }-->
-<!--}-->
+        // Reviews list
+        const reviews = d.reviews || [];
+        document.getElementById('reviewsList').innerHTML = reviews.length ? reviews.map(rv => `
+            <div class="review-card">
+                <div class="rc-head">
+                    <span class="rc-stars">${'⭐'.repeat(Math.round(rv.overall))}</span>
+                    <span>${rv.timestamp}</span>
+                </div>
+                <div style="font-size:11px;color:var(--sub)">
+                    🧹 Cleanliness: ${rv.cleanliness} &nbsp;|&nbsp; 🚌 Driver: ${rv.driver} &nbsp;|&nbsp; ⏱️ Punctuality: ${rv.punctuality}
+                </div>
+                ${rv.comment ? `<div class="rc-comment">"${rv.comment}"</div>` : ''}
+            </div>`).join('') : '<div style="font-size:12px;color:var(--dim);padding:8px">No reviews yet. Be the first!</div>';
+    } catch(e) {
+        alert('Could not load ratings. Make sure the backend is running.');
+    }
+}
 
-<!--async function submitRating() {-->
-<!--    const busNum = document.getElementById('ratingBusNum').value.trim();-->
-<!--    const comment = document.getElementById('ratingComment').value.trim();-->
-<!--    const msg = document.getElementById('ratingMsg');-->
+async function submitRating() {
+    const busNum = document.getElementById('ratingBusNum').value.trim();
+    const comment = document.getElementById('ratingComment').value.trim();
+    const msg = document.getElementById('ratingMsg');
 
-<!--    if (!busNum) { alert('Please enter a bus number first'); return; }-->
-<!--    if (!ratingState.cleanliness || !ratingState.driver || !ratingState.punctuality) {-->
-<!--        msg.innerHTML = '<span style="color:#ef4444">⚠️ Please rate all 3 categories</span>'; return;-->
-<!--    }-->
+    if (!busNum) { alert('Please enter a bus number first'); return; }
+    if (!ratingState.cleanliness || !ratingState.driver || !ratingState.punctuality) {
+        msg.innerHTML = '<span style="color:#ef4444">⚠️ Please rate all 3 categories</span>'; return;
+    }
 
-<!--    try {-->
-<!--        msg.innerHTML = '<span style="color:var(&#45;&#45;dim)">Submitting...</span>';-->
-<!--        const r = await fetch(`${API}/ratings/${busNum}`, {-->
-<!--            method: 'POST',-->
-<!--            headers: { 'Content-Type': 'application/json' },-->
-<!--            body: JSON.stringify({-->
-<!--                cleanliness: ratingState.cleanliness,-->
-<!--                driver: ratingState.driver,-->
-<!--                punctuality: ratingState.punctuality,-->
-<!--                comment-->
-<!--            })-->
-<!--        });-->
-<!--        if (r.ok) {-->
-<!--            msg.innerHTML = '<span style="color:#22c55e">✅ Rating submitted!</span>';-->
-<!--            // Reset stars-->
-<!--            ['cleanliness','driver','punctuality'].forEach(c => setStar(c, 0));-->
-<!--            ratingState.cleanliness = ratingState.driver = ratingState.punctuality = 0;-->
-<!--            document.getElementById('ratingComment').value = '';-->
-<!--            setTimeout(() => { loadBusRatings(); loadTopBuses(); }, 800);-->
-<!--        }-->
-<!--    } catch(e) {-->
-<!--        msg.innerHTML = '<span style="color:#ef4444">❌ Error submitting rating</span>';-->
-<!--    }-->
-<!--}-->
+    try {
+        msg.innerHTML = '<span style="color:var(--dim)">Submitting...</span>';
+        const r = await fetch(`${API}/ratings/${busNum}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                cleanliness: ratingState.cleanliness,
+                driver: ratingState.driver,
+                punctuality: ratingState.punctuality,
+                comment
+            })
+        });
+        if (r.ok) {
+            msg.innerHTML = '<span style="color:#22c55e">✅ Rating submitted!</span>';
+            // Reset stars
+            ['cleanliness','driver','punctuality'].forEach(c => setStar(c, 0));
+            ratingState.cleanliness = ratingState.driver = ratingState.punctuality = 0;
+            document.getElementById('ratingComment').value = '';
+            setTimeout(() => { loadBusRatings(); loadTopBuses(); }, 800);
+        }
+    } catch(e) {
+        msg.innerHTML = '<span style="color:#ef4444">❌ Error submitting rating</span>';
+    }
+}
 
 // ===== TICKET SERVICE =====
 
