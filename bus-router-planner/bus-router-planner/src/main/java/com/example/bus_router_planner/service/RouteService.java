@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.annotation.PostConstruct;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class RouteService {
+
+
+    @Autowired
+    private CrowdPredictionService crowdPredictionService;
 
     private Graph graph;
     private List<BusStop> allStops;
@@ -275,6 +280,16 @@ public class RouteService {
             }
 
             attachPolylines(response);
+
+            // Crowd prediction
+            LocalTime t = (request.getDepartureTime() != null)
+                    ? LocalTime.parse(request.getDepartureTime())
+                    : LocalTime.now();
+            String crowd = crowdPredictionService.predictCrowd(t);
+            response.setCrowdLevel(crowd);
+            response.setSeatsAvailable(crowdPredictionService.estimateSeatAvailability(crowd));
+            response.setCrowdMessage(crowd.equals("HIGH") ? "Very crowded at this time"
+                    : crowd.equals("MEDIUM") ? "Moderately busy" : "Good time to travel");
             return response;
 
         } catch (Exception e) {
@@ -330,6 +345,8 @@ public class RouteService {
         }
 
         response.setPolylines(polylines);
+
+
     }
 
     /**
