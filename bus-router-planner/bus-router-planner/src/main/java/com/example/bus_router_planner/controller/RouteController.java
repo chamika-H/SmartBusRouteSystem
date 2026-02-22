@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api")
@@ -138,14 +140,21 @@ public class RouteController {
 
     @GetMapping("/crowd")
     public Map<String, Object> getCrowdLevel(@RequestParam String stopId,
-                                             @RequestParam String time) {
-        LocalTime t = LocalTime.parse(time); // format: "08:30"
-        String level = crowdPredictionService.predictCrowd(t);
+                                             @RequestParam String time,
+                                             @RequestParam(defaultValue = "WEEKDAY") String dayType) {
+        LocalTime t = LocalTime.parse(time);
+        LocalDate date = dayType.equals("WEEKEND")
+                ? LocalDate.of(2025, 1, 4)  // a Saturday
+                : LocalDate.of(2025, 1, 6); // a Monday
+        LocalDateTime dt = LocalDateTime.of(date, t);
+
+        String level = crowdPredictionService.predictCrowdAdvanced(dt);
         int seats = crowdPredictionService.estimateSeatAvailability(level);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("stopId", stopId);
         result.put("time", time);
+        result.put("dayType", dayType);
         result.put("crowdLevel", level);
         result.put("seatsAvailable", seats);
         result.put("icon", level.equals("HIGH") ? "🔴" : level.equals("MEDIUM") ? "🟡" : "🟢");
