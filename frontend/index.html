@@ -157,6 +157,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);height:100vh;overflow
 .legend .litem{display:flex;align-items:center;gap:4px;margin-bottom:2px;color:var(--sub)}
 .legend .ldot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
+
+/* Crowd panel */
+.crowd-badge{padding:20px;border-radius:12px;border:2px solid;text-align:center;margin:12px 16px}
+.crowd-level{font-size:22px;font-weight:700;margin:8px 0}
+.crowd-icon{font-size:40px}
+.crowd-seats{font-size:11px;color:var(--dim);margin-top:6px}
+
+
 /* Lang selector */
 .lang-sel{position:absolute;top:10px;left:10px;z-index:1000;display:flex;gap:2px;background:rgba(15,23,42,.85);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:8px;padding:3px}
 .lang-btn{padding:4px 8px;border:none;border-radius:4px;font-size:10px;cursor:pointer;background:transparent;color:var(--sub);font-weight:600}
@@ -185,6 +193,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);height:100vh;overflow
         <div class="tab" onclick="showTab('nearby')"><span class="tab-icon">📍</span>Nearby</div>
         <div class="tab" onclick="showTab('alerts')"><span class="tab-icon">⚠️</span>Alerts</div>
         <div class="tab" onclick="showTab('more')"><span class="tab-icon">📊</span>More</div>
+        <div class="tab" onclick="showTab('crowd')"><span class="tab-icon">👥</span>Crowd</div>
     </div>
 
     <!-- ROUTES PANEL -->
@@ -243,6 +252,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);height:100vh;overflow
     <div class="panel" id="p-alerts">
         <div id="alertResults"><div class="loading"><div class="spinner"></div></div></div>
     </div>
+
+
+
+    <!-- CROWD PREDICTION PANEL -->
+    <div class="panel" id="p-crowd">
+        <div class="search" style="padding:12px 16px">
+            <label style="color:var(--dim);font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:4px;display:block">Bus Stop</label>
+            <select class="sinput" id="crowdStop" style="padding-left:10px"></select>
+            <label style="color:var(--dim);font-size:10px;font-weight:600;text-transform:uppercase;margin-bottom:4px;margin-top:10px;display:block">Departure Time</label>
+            <input class="sinput" id="crowdTime" type="time" value="08:00" style="padding-left:10px">
+            <button class="go-btn" onclick="checkCrowd()" style="margin-top:8px">👥 Check Crowd Level</button>
+        </div>
+        <div id="crowdResult"></div>
+    </div>
+
+
+
 
     <!-- MORE PANEL (Graph, History, Favorites) -->
     <div class="panel" id="p-more">
@@ -346,7 +372,7 @@ function setMapType(t,btn){if(currentTile)map.removeLayer(currentTile);currentTi
 document.querySelectorAll('.map-type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
 
 async function checkAPI(){try{const r=await fetch(API+'/health');const on=r.ok;document.getElementById('sDot').className='status-dot'+(on?' on':'');document.getElementById('sTxt').textContent=on?'Online':'Offline'}catch{}}
-async function loadStops(){try{const r=await fetch(API+'/stops');stops=await r.json();showAllStops();populateSchSelect()}catch(e){console.error(e)}}
+async function loadStops(){try{const r=await fetch(API+'/stops');stops=await r.json();showAllStops();populateSchSelect();populateCrowdSelect()}catch(e){console.error(e)}}
 function mkIcon(c,s){return L.divIcon({html:`<div style="width:${s}px;height:${s}px;background:${c};border:2px solid rgba(255,255,255,.9);border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>`,className:'',iconSize:[s,s],iconAnchor:[s/2,s/2]})}
 function showAllStops(){stopMarkers.forEach(m=>map.removeLayer(m));stopMarkers=[];const b=[];
 stops.forEach(s=>{const ll=[s.latitude,s.longitude];b.push(ll);const m=L.marker(ll,{icon:mkIcon('#4285F4',7)}).addTo(map);
@@ -687,6 +713,55 @@ m.bindPopup(`<b>Step ${i+1}</b><br>${s.name}`);routeLayers.push(m);
 if(i>0){const prev=path[i-1];const line=L.polyline([[prev.latitude,prev.longitude],[s.latitude,s.longitude]],{color:'#f97316',weight:4,opacity:.8,dashArray:'6,4'}).addTo(map);routeLayers.push(line)}},i*500)}
 html+=`<div style="margin-top:8px;padding:8px;background:rgba(34,197,94,.1);border-radius:6px;font-size:11px">✅ Path found: ${path.length} nodes visited. Total: ${d.totalValue} ${d.mode==='time'?'min':d.mode==='cost'?'Rs.':'km'}</div></div>`;
 stepsDiv.innerHTML=html}catch(e){stepsDiv.innerHTML='<div class="empty"><h3>Error running algorithm</h3></div>'}}
+
+
+// ===== CROWD PREDICTION =====
+function populateCrowdSelect(){
+    const sel = document.getElementById('crowdStop');
+    sel.innerHTML = '<option value="">-- Select Stop --</option>' +
+        stops.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+async function checkCrowd(){
+    const stopId = document.getElementById('crowdStop').value;
+    const time = document.getElementById('crowdTime').value;
+    if(!stopId){ alert('Please select a stop'); return; }
+    try{
+        const r = await fetch(`${API}/crowd?stopId=${stopId}&time=${time}`);
+        const d = await r.json();
+        const colors = { HIGH:'#ef4444', MEDIUM:'#f59e0b', LOW:'#22c55e' };
+        const c = colors[d.crowdLevel];
+        document.getElementById('crowdResult').innerHTML = `
+            <div class="crowd-badge" style="border-color:${c}">
+                <div class="crowd-icon">${d.icon}</div>
+                <div class="crowd-level" style="color:${c}">${d.crowdLevel} CROWD</div>
+                <div style="font-size:13px">${d.message}</div>
+                <div class="crowd-seats">~${d.seatsAvailable} seats available</div>
+            </div>
+            <div style="padding:0 16px">
+                <div style="font-size:11px;color:var(--dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px">Crowd by Time of Day</div>
+                ${[
+                    {label:'Early Morning (5–7am)', level:'LOW'},
+                    {label:'Morning Peak (7–9am)', level:'HIGH'},
+                    {label:'Mid Morning (10–11am)', level:'MEDIUM'},
+                    {label:'Lunch (12–1pm)', level:'MEDIUM'},
+                    {label:'Afternoon (2–3pm)', level:'LOW'},
+                    {label:'Evening Peak (4–7pm)', level:'HIGH'},
+                    {label:'Night (8pm+)', level:'LOW'}
+                ].map(row => {
+                    const clr = colors[row.level];
+                    return `<div class="bar-row">
+                        <div class="bar-label" style="font-size:9px">${row.label}</div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:${row.level==='HIGH'?90:row.level==='MEDIUM'?50:15}%;background:${clr}">
+                                ${row.level}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>`;
+    }catch(e){ document.getElementById('crowdResult').innerHTML='<div class="empty"><h3>Error loading crowd data</h3></div>'; }
+}
 
 // Load graph when More tab's Graph subtab is opened
 document.querySelectorAll('#p-more .tabs .tab').forEach(t=>t.addEventListener('click',()=>{if(t.textContent.includes('Graph'))loadGraph()}));
