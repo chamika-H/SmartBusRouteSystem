@@ -5,8 +5,10 @@ import com.example.bus_router_planner.model.RouteRequest;
 import com.example.bus_router_planner.model.RouteResponse;
 import com.example.bus_router_planner.model.TransitOption;
 import com.example.bus_router_planner.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -127,5 +129,51 @@ public class RouteController {
         double R = 6371; double dLat = Math.toRadians(lat2 - lat1); double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(Math.toRadians(lat1))*Math.cos(Math.toRadians(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    @Autowired
+    private CrowdPredictionService crowdPredictionService;
+
+// Add to constructor too, OR just use @Autowired field injection like above
+
+    @GetMapping("/crowd")
+    public Map<String, Object> getCrowdLevel(@RequestParam String stopId,
+                                             @RequestParam String time) {
+        LocalTime t = LocalTime.parse(time); // format: "08:30"
+        String level = crowdPredictionService.predictCrowd(t);
+        int seats = crowdPredictionService.estimateSeatAvailability(level);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("stopId", stopId);
+        result.put("time", time);
+        result.put("crowdLevel", level);
+        result.put("seatsAvailable", seats);
+        result.put("icon", level.equals("HIGH") ? "🔴" : level.equals("MEDIUM") ? "🟡" : "🟢");
+        result.put("message", level.equals("HIGH") ? "Very crowded — expect standing room only"
+                : level.equals("MEDIUM") ? "Moderate crowd — some seats available"
+                : "Low crowd — plenty of seats");
+        return result;
+    }
+
+    @GetMapping("/crowd/route")
+    public List<Map<String, Object>> getCrowdForRoute(@RequestParam String source,
+                                                      @RequestParam String destination,
+                                                      @RequestParam String departureTime) {
+        LocalTime t = LocalTime.parse(departureTime);
+        String level = crowdPredictionService.predictCrowd(t);
+        int seats = crowdPredictionService.estimateSeatAvailability(level);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("from", source);
+        info.put("to", destination);
+        info.put("departureTime", departureTime);
+        info.put("crowdLevel", level);
+        info.put("seatsAvailable", seats);
+        info.put("recommendation", level.equals("HIGH")
+                ? "Consider travelling 30 mins earlier or later to avoid peak crowds"
+                : "Good time to travel!");
+        result.add(info);
+        return result;
     }
 }
