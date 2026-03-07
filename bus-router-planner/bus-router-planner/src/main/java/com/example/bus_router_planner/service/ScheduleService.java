@@ -34,7 +34,7 @@ public class ScheduleService {
         BUS_FREQUENCY.put("154", 15);
         BUS_FREQUENCY.put("174", 18);
         BUS_FREQUENCY.put("188", 20);
-        BUS_FREQUENCY.put("235", 15);
+        BUS_FREQUENCY.put("226", 15);
         BUS_FREQUENCY.put("245", 18);
         BUS_FREQUENCY.put("246", 20);
         BUS_FREQUENCY.put("350", 25);
